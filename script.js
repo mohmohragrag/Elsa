@@ -143,5 +143,5 @@ function calculateWeight() {
         }
     }
 
-    document.getElementById("result").innerHTML = `Weight: ${weight.toFixed(2)} kg`; // Show weight in kg
+    document.getElementById("result").innerHTML = `Weight: ${weight.toFixed(2)} g`; // Show weight in kg
 }

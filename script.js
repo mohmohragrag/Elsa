@@ -9,7 +9,7 @@ const steelSections = {
     "Flat Bars": ["Length (mm)", "Width (mm)", "Thickness (mm)"],
     "Equal Angles": ["Length (mm)", "Leg Length (mm)", "Thickness (mm)"],
     "Unequal Angles": ["Length (mm)", "Leg Length 1 (mm)", "Leg Length 2 (mm)", "Thickness (mm)"],
-    "T-profile": ["Length (mm)", "Width (mm)", "Height (mm)", "Thickness (mm)"], // Added dimensions for T-profile
+    "T-profile": ["Length (mm)", "Width (mm)", "Height (mm)", "Thickness (mm)"],
     "Hexagonal Sections": ["Length (mm)", "Outer (mm)"]
 };
 
@@ -36,7 +36,7 @@ function showFields() {
             const inputField = document.createElement("input");
             inputField.type = "number";
             inputField.placeholder = field;
-            inputField.oninput = calculateWeight; // Add input event listener
+            inputField.oninput = calculateWeight;
             fieldsContainer.appendChild(inputField);
         });
 
@@ -71,7 +71,7 @@ function calculateWeight() {
                 weight = (lengthPlate / 1000) * (widthPlate / 1000) * (thicknessPlate / 1000) * density; // Convert mm to m
                 break;
 
-            case "Chequered Steel Plates": // حساب الصاج البقلاوه
+            case "Chequered Steel Plates":
                 const [lengthCheq, widthCheq, thicknessCheq] = values;
                 const adjustedThickness = (thicknessCheq + 0.3) / 1000; // Convert to meters
                 weight = (lengthCheq / 1000) * (widthCheq / 1000) * (adjustedThickness) * density; // in kg
@@ -79,7 +79,7 @@ function calculateWeight() {
 
             case "Seamless Steel Pipes - Circular":
                 const [lengthPipe, outerDiameter, thicknessPipe] = values;
-                weight = ((outerDiameter - thicknessPipe) / 1000) * (thicknessPipe / 1000) * 0.025 * ((lengthPipe + 20) / 1000); // Convert mm to m
+                weight = ((outerDiameter / 1000 - thicknessPipe / 1000) * Math.PI * thicknessPipe / 1000) * (lengthPipe / 1000) * density; // Updated formula
                 break;
 
             case "Hollow Structural Sections - Square":
@@ -87,9 +87,9 @@ function calculateWeight() {
                 const lengthM = lengthSquare / 1000; // Convert mm to m
                 const sideLengthM = sideLengthSquare / 1000; // Convert mm to m
                 const thicknessM = thicknessSquare / 1000; // Convert mm to m
-                const outerArea = Math.pow(sideLengthM, 2); // مساحة المقطع الخارجي
-                const innerArea = Math.pow(sideLengthM - 2 * thicknessM, 2); // مساحة المقطع الداخلي
-                weight = lengthM * (outerArea - innerArea) * density; // بالكيلو جرام
+                const outerArea = Math.pow(sideLengthM, 2);
+                const innerArea = Math.pow(sideLengthM - 2 * thicknessM, 2);
+                weight = lengthM * (outerArea - innerArea) * density; // in kg
                 break;
 
             case "Hollow Structural Sections - Rectangular":
@@ -133,15 +133,14 @@ function calculateWeight() {
             case "Hexagonal Sections":
                 const [lengthHexagon, flatToFlatDistance] = values;
                 const sideLength = flatToFlatDistance / Math.sqrt(3); // Calculate side length from flat-to-flat distance
-                const areaHexagon = (3 * Math.sqrt(3) / 2) * Math.pow(sideLength / 1000, 2); // Convert to meters
-                weight = lengthHexagon * areaHexagon * density; // in kg
+                weight = (lengthHexagon / 1000) * ((3 * Math.sqrt(3)) / 2) * Math.pow((sideLength / 1000), 2) * density; // in kg
                 break;
 
             default:
-                document.getElementById("result").innerHTML = "Please select a valid section type.";
+                document.getElementById("result").innerHTML = "Please enter valid dimensions.";
                 return;
         }
-    }
 
-    document.getElementById("result").innerHTML = `Weight: ${weight.toFixed(2)} kg`; // Show weight in kg
+        document.getElementById("result").innerHTML = `Weight: ${weight.toFixed(2)} kg`;
+    }
 }
